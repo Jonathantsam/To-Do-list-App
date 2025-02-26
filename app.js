@@ -1,43 +1,51 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const taskInput = document.getElementById("taskInput");
-    const addTaskButton = document.getElementById("addTaskButton");
-    const taskList = document.getElementById("taskList");
+const taskForm = document.getElementById('taskForm');
+const taskTitle = document.getElementById('taskTitle');
+const taskCategory = document.getElementById('taskCategory');
+const taskDueDate = document.getElementById('taskDueDate');
+const taskPriority = document.getElementById('taskPriority');
+const taskList = document.getElementById('taskList');
 
-    function addTask() {
-        const taskValue = taskInput.value.trim();
-        if (taskValue === "") {
-            alert("Please enter a task!");
-            return;
-        }
+function createTaskElement(task) {
+    const li = document.createElement('li');
+    li.classList.add(task.priority);
 
-        const currentTime = new Date();
-        const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    li.innerHTML = `
+        <span><strong>${task.title}</strong></span>
+        <span>Category: ${task.category}</span>
+        <span>Due: ${task.dueDate}</span>
+        <button class="delete">Delete</button>
+    `;
 
-        const taskItem = document.createElement("li");
-        taskItem.className = "task";
+    const deleteButton = li.querySelector('.delete');
+    deleteButton.addEventListener('click', () => {
+        li.remove();
+    });
 
-        const taskText = document.createElement("span");
-        taskText.textContent = `${taskValue} (Added at ${formattedTime})`;
+    return li;
+}
 
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-        deleteButton.className = "delete-button";
-        deleteButton.addEventListener("click", () => {
-            taskList.removeChild(taskItem);
-        });
+taskForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        taskItem.appendChild(taskText);
-        taskItem.appendChild(deleteButton);
+    const title = taskTitle.value;
+    const category = taskCategory.value;
+    const dueDate = taskDueDate.value;
+    const priority = taskPriority.value;
 
-        taskList.appendChild(taskItem);
-
-        taskInput.value = "";
+    if (!title || !category || !dueDate || !priority) {
+        alert('Please fill in all fields.');
+        return;
     }
 
-    addTaskButton.addEventListener("click", addTask);
-    taskInput.addEventListener("keypress", (event) => {
-        if (event.key === "Enter") {
-            addTask();
-        }
-    });
+    const task = {
+        title,
+        category,
+        dueDate,
+        priority,
+    };
+
+    const taskElement = createTaskElement(task);
+    taskList.appendChild(taskElement);
+
+    taskForm.reset();
 });
